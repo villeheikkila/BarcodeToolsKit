@@ -78,5 +78,5 @@ public enum Barcode: Sendable {
         }
     }
 
-    private static let barcodeSymbologies: [VNBarcodeSymbology] = [.ean8, .ean13]
+    static let barcodeSymbologies: [VNBarcodeSymbology] = [.ean8, .ean13]
 }
