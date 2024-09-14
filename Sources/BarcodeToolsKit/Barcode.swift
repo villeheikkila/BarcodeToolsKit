@@ -69,7 +69,7 @@ public enum Barcode: Sendable {
         }
     }
 
-    public var standardName: String? {
+    public var standardName: String {
         switch self {
         case .ean8:
             "org.gs1.EAN-8"
