@@ -1,10 +1,10 @@
 public enum Barcode {
     case ean13(String)
     case ean8(String)
-    
+
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         if trimmedString.count == 13 {
             self = .ean13(trimmedString)
         } else if trimmedString.count == 8 {
@@ -12,8 +12,8 @@ public enum Barcode {
         } else {
             return nil
         }
-        
-        if !self.isValid {
+
+        if !isValid {
             return nil
         }
     }

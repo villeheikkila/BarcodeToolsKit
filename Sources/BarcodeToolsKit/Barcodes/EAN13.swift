@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct EAN13: View {
+    @Environment(\.barcodeLineColor) private var barcodeLineColor
+
     let barcode: String
-    
+
     var body: some View {
         Canvas { context, size in
             drawBarcode(context: context, size: size)
@@ -50,7 +52,7 @@ struct EAN13: View {
                 fullHeight * 0.9 : fullHeight
 
             let barRect = CGRect(x: CGFloat(index) * moduleWidth, y: 0, width: moduleWidth, height: barHeight)
-            context.fill(Path(barRect), with: .color(.black))
+            context.fill(Path(barRect), with: .color(barcodeLineColor))
         }
     }
 
@@ -60,13 +62,13 @@ struct EAN13: View {
         let font = Font.system(size: fontSize).weight(.medium)
         let firstDigitX = moduleWidth * 5
         let firstDigitY = size.height * 0.9
-        context.draw(Text(String(firstTwoDigits.prefix(1))).font(font), at: CGPoint(x: firstDigitX, y: firstDigitY))
+        context.draw(Text(String(firstTwoDigits.prefix(1))).font(font).foregroundStyle(barcodeLineColor), at: CGPoint(x: firstDigitX, y: firstDigitY))
         let mfgCodeX = moduleWidth * 32
         let mfgCodeY = size.height * 0.9
-        context.draw(Text("\(firstTwoDigits.suffix(1))\(manufacturerCode)").font(font), at: CGPoint(x: mfgCodeX, y: mfgCodeY))
+        context.draw(Text("\(firstTwoDigits.suffix(1))\(manufacturerCode)").font(font).foregroundStyle(barcodeLineColor), at: CGPoint(x: mfgCodeX, y: mfgCodeY))
         let productCodeX = moduleWidth * 77
         let productCodeY = size.height * 0.9
-        context.draw(Text("\(productCode)\(checkDigit)").font(font), at: CGPoint(x: productCodeX, y: productCodeY))
+        context.draw(Text("\(productCode)\(checkDigit)").font(font).foregroundStyle(barcodeLineColor), at: CGPoint(x: productCodeX, y: productCodeY))
     }
 
     private func encodeLeftHalfDigits(digits: String) -> String {

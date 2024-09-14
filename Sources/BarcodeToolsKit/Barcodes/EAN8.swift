@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct EAN8: View {
+    @Environment(\.barcodeLineColor) private var barcodeLineColor
+
     let barcode: String
-    
+
     var body: some View {
         Canvas { context, size in
             drawBarcode(context: context, size: size)
@@ -46,7 +48,7 @@ struct EAN8: View {
                 fullHeight * 0.9 : fullHeight
 
             let barRect = CGRect(x: CGFloat(index) * moduleWidth, y: 0, width: moduleWidth, height: barHeight)
-            context.fill(Path(barRect), with: .color(.black))
+            context.fill(Path(barRect), with: .color(barcodeLineColor))
         }
     }
 
@@ -56,10 +58,10 @@ struct EAN8: View {
         let font = Font.system(size: fontSize).weight(.medium)
         let leftHalfX = moduleWidth * 24
         let leftHalfY = size.height * 0.9
-        context.draw(Text(leftHalf).font(font), at: CGPoint(x: leftHalfX, y: leftHalfY))
+        context.draw(Text(leftHalf).font(font).foregroundStyle(barcodeLineColor), at: CGPoint(x: leftHalfX, y: leftHalfY))
         let rightHalfX = moduleWidth * 55
         let rightHalfY = size.height * 0.9
-        context.draw(Text(rightHalf).font(font), at: CGPoint(x: rightHalfX, y: rightHalfY))
+        context.draw(Text(rightHalf).font(font).foregroundStyle(barcodeLineColor), at: CGPoint(x: rightHalfX, y: rightHalfY))
     }
 
     private func encodeDigits(digits: String, encodingPatterns: [String]) -> String {

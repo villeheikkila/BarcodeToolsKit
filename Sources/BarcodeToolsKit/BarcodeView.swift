@@ -7,10 +7,10 @@ import SwiftUI
 ///
 /// Example usage:
 /// ```swift
-/// BarcodeGenerator(barcode: .ean13("6410405176059"))
+/// BarcodeView(barcode: .ean13("6410405176059"))
 /// ```
-public struct BarcodeGenerator<InvalidView: View>: View {
-    let barcode: Barcode
+public struct BarcodeView<InvalidView: View>: View {
+    let barcode: Barcode?
     let invalidBarcodeView: () -> InvalidView
 
     public init(
@@ -20,9 +20,17 @@ public struct BarcodeGenerator<InvalidView: View>: View {
         self.barcode = barcode
         self.invalidBarcodeView = invalidBarcodeView
     }
+    
+    public init(
+        barcode: String,
+        @ViewBuilder invalidBarcodeView: @escaping () -> InvalidView = { EmptyView() }
+    ) {
+        self.barcode = .init(rawValue: barcode)
+        self.invalidBarcodeView = invalidBarcodeView
+    }
 
     public var body: some View {
-        if barcode.isValid {
+        if let barcode, barcode.isValid {
             Group {
                 switch barcode {
                 case let .ean13(code):
@@ -37,13 +45,25 @@ public struct BarcodeGenerator<InvalidView: View>: View {
     }
 }
 
+public extension EnvironmentValues {
+    @Entry var barcodeLineColor: Color = .accentColor
+}
+
+public extension View {
+    func barcodeLineColor(_ color: Color) -> some View {
+        environment(\.barcodeLineColor, color)
+    }
+}
+
 #Preview {
     VStack(spacing: 20) {
-        BarcodeGenerator(barcode: .ean13("6410405176059"))
+        BarcodeView(barcode: .ean13("6410405176059"))
             .frame(width: 200, height: 100)
-        BarcodeGenerator(barcode: .ean8("20886509"))
+            .barcodeLineColor(.red)
+        BarcodeView(barcode: .ean8("20886509"))
             .frame(width: 200, height: 100)
-        BarcodeGenerator(barcode: .ean8("12345678")) {
+            .barcodeLineColor(.blue)
+        BarcodeView(barcode: .ean8("12345678")) {
             Text("INVALID")
         }
         .frame(width: 200, height: 100)
