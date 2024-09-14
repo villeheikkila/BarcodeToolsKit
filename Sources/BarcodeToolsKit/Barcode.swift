@@ -1,3 +1,4 @@
+import SwiftUI
 import Vision
 
 public enum Barcode: Sendable {
@@ -76,6 +77,11 @@ public enum Barcode: Sendable {
         case .ean13:
             "org.gs1.EAN-13"
         }
+    }
+
+    @MainActor
+    public var view: some View {
+        BarcodeView(barcode: self)
     }
 
     static let barcodeSymbologies: [VNBarcodeSymbology] = [.ean8, .ean13]
