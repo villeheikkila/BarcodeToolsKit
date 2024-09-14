@@ -57,7 +57,7 @@ struct EAN13: View {
     private func drawText(context: GraphicsContext, size: CGSize) {
         let moduleWidth = size.width / 113
         let fontSize = size.height * 0.15
-        let font = Font.system(size: fontSize).weight(.regular)
+        let font = Font.system(size: fontSize).weight(.medium)
         let firstDigitX = moduleWidth * 5
         let firstDigitY = size.height * 0.9
         context.draw(Text(String(firstTwoDigits.prefix(1))).font(font), at: CGPoint(x: firstDigitX, y: firstDigitY))
