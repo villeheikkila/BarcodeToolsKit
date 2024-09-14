@@ -4,10 +4,10 @@ Work in progress library for providing additional barcode tools for Swift and Sw
 
 ### Features
 
-| Symbology | Validation | View |
-| --------- | ---------- | ---- |
-| EAN-8     | ✅         | ✅   |
-| EAN-13    | ✅         | ✅   |
+| Symbology | Validation | View | Scanner |
+|-----------|------------|------|---------|
+| EAN-8     | ✅          | ✅    | ✅       |
+| EAN-13    | ✅          | ✅    | ✅       |
 
 ### Example
 
@@ -27,4 +27,12 @@ struct ContentView: View {
         }
     }
 }
+```
+
+Scan a barcode
+
+```swift
+import SwiftUI
+
+BarcodeScannerView(onDataFound: { barcode in print(barcode) })
 ```
