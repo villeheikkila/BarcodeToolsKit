@@ -1,4 +1,6 @@
-public enum Barcode {
+import Vision
+
+public enum Barcode: Sendable {
     case ean13(String)
     case ean8(String)
 
@@ -48,4 +50,24 @@ public enum Barcode {
             return checkDigit == calculatedCheckDigit
         }
     }
+
+    public var vnBarcodeSymbology: VNBarcodeSymbology {
+        switch self {
+        case .ean8:
+            VNBarcodeSymbology.ean8
+        case .ean13:
+            VNBarcodeSymbology.ean13
+        }
+    }
+
+    public var standardName: String? {
+        switch self {
+        case .ean8:
+            "org.gs1.EAN-8"
+        case .ean13:
+            "org.gs1.EAN-13"
+        }
+    }
+
+    private static let barcodeSymbologies: [VNBarcodeSymbology] = [.ean8, .ean13]
 }
