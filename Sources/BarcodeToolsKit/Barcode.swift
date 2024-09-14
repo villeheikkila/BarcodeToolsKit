@@ -20,6 +20,15 @@ public enum Barcode: Sendable {
         }
     }
 
+    public var barcodeString: String {
+        return switch self {
+        case let .ean13(barcode):
+            barcode
+        case let .ean8(barcode):
+            barcode
+        }
+    }
+
     public var isValid: Bool {
         switch self {
         case let .ean13(barcode):
