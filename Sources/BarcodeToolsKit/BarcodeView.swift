@@ -20,7 +20,7 @@ public struct BarcodeView<InvalidView: View>: View {
         self.barcode = barcode
         self.invalidBarcodeView = invalidBarcodeView
     }
-    
+
     public init(
         barcode: String,
         @ViewBuilder invalidBarcodeView: @escaping () -> InvalidView = { EmptyView() }
