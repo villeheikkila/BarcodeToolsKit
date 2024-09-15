@@ -50,20 +50,46 @@ public extension View {
 
 #Preview {
     VStack(spacing: 20) {
-        BarcodeView(barcode: "6410405176059")
-            .frame(width: 200, height: 100)
-            .barcodeLineColor(.red)
-        BarcodeView(barcode: "20886509")
-            .frame(width: 200, height: 100)
-            .barcodeLineColor(.blue)
-        BarcodeView(barcode: "123456789012")
-            .barcodeLineColor(.green)
-            .frame(width: 200, height: 100)
-        BarcodeView(barcode: "04252614")
-            .frame(width: 150, height: 100)
-        BarcodeView(barcode: "123456722") {
-            Text("INVALID")
+        VStack {
+            Text("EAN-13")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            BarcodeView(barcode: "6410405176059")
+                .frame(width: 200, height: 100)
         }
-        .frame(width: 200, height: 100)
+
+        VStack {
+            Text("EAN-8")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            BarcodeView(barcode: "20886509")
+                .frame(width: 200, height: 100)
+        }
+
+        VStack {
+            Text("UPC-A")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            BarcodeView(barcode: "123456789012")
+                .frame(width: 200, height: 100)
+        }
+
+        VStack {
+            Text("UPC-E")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            BarcodeView(barcode: "04252614")
+                .frame(width: 150, height: 100)
+        }
+
+        VStack {
+            Text("Invalid")
+                .font(.caption)
+            BarcodeView(barcode: "123456722") {
+                Text("INVALID")
+            }
+            .frame(width: 200, height: 100)
+        }
     }
+    .barcodeLineColor(.black)
 }
