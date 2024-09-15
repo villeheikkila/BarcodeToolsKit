@@ -1,50 +1,36 @@
 import SwiftUI
 import Vision
 
-public enum Barcode: Sendable {
-    case ean13(String)
-    case ean8(String)
-    case upca(String)
-    case upce(String)
+public enum Barcode: Sendable, CustomStringConvertible {
+    case ean13(EAN13)
+    case ean8(EAN8)
+    case upca(UPCA)
+    case upce(UPCE)
 
     public init?(rawValue: String) {
-        let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        switch trimmedString.count {
-        case 13:
-            self = .ean13(trimmedString)
-        case 12:
-            self = .upca(trimmedString)
-        case 8:
-            if UPCE(barcode: trimmedString).isValid {
-                self = .upce(trimmedString)
-            } else {
-                self = .ean8(trimmedString)
-            }
-        default:
-            return nil
-        }
-        if !isValid {
+        if let ean13 = EAN13(barcode: rawValue) {
+            self = .ean13(ean13)
+        } else if let ean8 = EAN8(barcode: rawValue) {
+            self = .ean8(ean8)
+        } else if let upca = UPCA(barcode: rawValue) {
+            self = .upca(upca)
+        } else if let upce = UPCE(barcode: rawValue) {
+            self = .upce(upce)
+        } else {
             return nil
         }
     }
 
     public var barcodeString: String {
         switch self {
-        case let .ean13(barcode), let .ean8(barcode), let .upce(barcode), let .upca(barcode):
-            barcode
-        }
-    }
-
-    public var isValid: Bool {
-        switch self {
-        case let .ean13(barcode):
-            EAN13(barcode: barcode).isValid
-        case let .ean8(barcode):
-            EAN8(barcode: barcode).isValid
-        case let .upca(barcode):
-            UPCA(barcode: barcode).isValid
-        case let .upce(barcode):
-            UPCE(barcode: barcode).isValid
+        case let .ean13(ean13):
+            ean13.barcode
+        case let .ean8(ean8):
+            ean8.barcode
+        case let .upce(upce):
+            upce.barcode
+        case let .upca(upca):
+            upca.barcode
         }
     }
 
@@ -69,6 +55,33 @@ public enum Barcode: Sendable {
             "org.gs1.UPC-A"
         case .upce:
             "org.gs1.UPC-E"
+        }
+    }
+
+    public var description: String {
+        switch self {
+        case let .ean13(ean13):
+            "\(ean13)"
+        case let .ean8(ean8):
+            "\(ean8)"
+        case let .upca(upca):
+            "\(upca)"
+        case let .upce(upce):
+            "\(upce)"
+        }
+    }
+
+    @ViewBuilder
+    public var view: some View {
+        switch self {
+        case let .ean13(ean13):
+            ean13.view
+        case let .ean8(ean8):
+            ean8.view
+        case let .upca(upca):
+            upca.view
+        case let .upce(upce):
+            upce.view
         }
     }
 }

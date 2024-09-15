@@ -30,17 +30,8 @@ public struct BarcodeView<InvalidView: View>: View {
     }
 
     public var body: some View {
-        if let barcode, barcode.isValid {
-            switch barcode {
-            case let .ean13(barcode):
-                EAN13View(ean13: .init(barcode: barcode))
-            case let .ean8(barcode):
-                EAN8View(ean8: .init(barcode: barcode))
-            case let .upca(barcode):
-                UPCAView(upca: .init(barcode: barcode))
-            case let .upce(barcode):
-                UPCEView(upce: .init(barcode: barcode))
-            }
+        if let barcode {
+            barcode.view
         } else {
             invalidBarcodeView()
         }
@@ -59,18 +50,18 @@ public extension View {
 
 #Preview {
     VStack(spacing: 20) {
-        BarcodeView(barcode: .ean13("6410405176059"))
+        BarcodeView(barcode: "6410405176059")
             .frame(width: 200, height: 100)
             .barcodeLineColor(.red)
-        BarcodeView(barcode: .ean8("20886509"))
+        BarcodeView(barcode: "20886509")
             .frame(width: 200, height: 100)
             .barcodeLineColor(.blue)
-        BarcodeView(barcode: .upca("123456789012"))
+        BarcodeView(barcode: "123456789012")
             .barcodeLineColor(.green)
             .frame(width: 200, height: 100)
-        BarcodeView(barcode: .upce("04252614"))
+        BarcodeView(barcode: "04252614")
             .frame(width: 150, height: 100)
-        BarcodeView(barcode: .ean8("12345678")) {
+        BarcodeView(barcode: "123456722") {
             Text("INVALID")
         }
         .frame(width: 200, height: 100)
