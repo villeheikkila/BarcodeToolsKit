@@ -5,30 +5,32 @@ public enum Barcode: Sendable {
     case ean13(String)
     case ean8(String)
     case upca(String)
+    case upce(String)
 
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        if trimmedString.count == 13 {
+        switch trimmedString.count {
+        case 13:
             self = .ean13(trimmedString)
-        } else if trimmedString.count == 8 {
-            self = .ean8(trimmedString)
-        } else {
+        case 12:
+            self = .upca(trimmedString)
+        case 8:
+            if UPCE(barcode: trimmedString).isValid {
+                self = .upce(trimmedString)
+            } else {
+                self = .ean8(trimmedString)
+            }
+        default:
             return nil
         }
-
         if !isValid {
             return nil
         }
     }
 
     public var barcodeString: String {
-        return switch self {
-        case let .ean13(barcode):
-            barcode
-        case let .ean8(barcode):
-            barcode
-        case let .upca(barcode):
+        switch self {
+        case let .ean13(barcode), let .ean8(barcode), let .upce(barcode), let .upca(barcode):
             barcode
         }
     }
@@ -41,6 +43,8 @@ public enum Barcode: Sendable {
             EAN8(barcode: barcode).isValid
         case let .upca(barcode):
             UPCA(barcode: barcode).isValid
+        case let .upce(barcode):
+            UPCE(barcode: barcode).isValid
         }
     }
 
@@ -50,7 +54,7 @@ public enum Barcode: Sendable {
             .ean8
         case .ean13:
             .ean13
-        case .upca:
+        case .upca, .upce:
             .upce
         }
     }
@@ -63,13 +67,8 @@ public enum Barcode: Sendable {
             "org.gs1.EAN-13"
         case .upca:
             "org.gs1.UPC-A"
+        case .upce:
+            "org.gs1.UPC-E"
         }
     }
-
-    @MainActor
-    public var view: some View {
-        BarcodeView(barcode: self)
-    }
-
-    static let barcodeSymbologies: [VNBarcodeSymbology] = [.ean8, .ean13, .upce]
 }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct UPCABarcodeView: View {
+struct UPCAView: View {
     @Environment(\.barcodeLineColor) private var barcodeLineColor
 
     private let fullHeightRatio = 0.8
@@ -101,7 +101,7 @@ struct UPCA {
 
 #Preview {
     VStack(spacing: 20) {
-        UPCABarcodeView(upca: .init(barcode: "123456789012"))
+        UPCAView(upca: .init(barcode: "123456789012"))
             .frame(width: 200, height: 100)
     }
 }

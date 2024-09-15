@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct EAN8View: View {
+    @Environment(\.barcodeLineColor) private var barcodeLineColor
+
     private let fullHeightRatio = 0.9
     private let guardBarHeightRatio = 0.9
     private let textYPositionRatio = 0.9
@@ -12,8 +14,6 @@ struct EAN8View: View {
     private let guardBarEndIndex = 41
     private let guardBarSecondStartIndex = 45
     private let guardBarSecondEndIndex = 74
-
-    @Environment(\.barcodeLineColor) private var barcodeLineColor
 
     let ean8: EAN8
 

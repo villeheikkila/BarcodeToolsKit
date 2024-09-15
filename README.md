@@ -9,6 +9,7 @@ Work in progress library for providing additional barcode tools for Swift and Sw
 | EAN-8     | ✅          | ✅    | ✅       |
 | EAN-13    | ✅          | ✅    | ✅       |
 | UPC-A    | ✅          | ✅    | ✅       |
+| UPC-E    | ✅          | ⚠️    | ✅       |
 
 ### Example
 

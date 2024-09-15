@@ -22,7 +22,7 @@ public struct BarcodeScannerView: View {
 
         var body: some View {
             DataScannerViewRepresentable(
-                recognizedDataTypes: [.barcode(symbologies: Barcode.barcodeSymbologies)],
+                recognizedDataTypes: [.barcode(symbologies: [.ean8, .ean13, .upce])],
                 onDataFound: { data in
                     if case let .barcode(foundBarcode) = data, let payloadStringValue = foundBarcode.payloadStringValue {
                         onDataFound(.init(rawValue: payloadStringValue))
