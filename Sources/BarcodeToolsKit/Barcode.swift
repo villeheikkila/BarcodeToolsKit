@@ -4,6 +4,7 @@ import Vision
 public enum Barcode: Sendable {
     case ean13(String)
     case ean8(String)
+    case upca(String)
 
     public init?(rawValue: String) {
         let trimmedString = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -27,6 +28,8 @@ public enum Barcode: Sendable {
             barcode
         case let .ean8(barcode):
             barcode
+        case let .upca(barcode):
+            barcode
         }
     }
 
@@ -36,15 +39,19 @@ public enum Barcode: Sendable {
             EAN13(barcode: barcode).isValid
         case let .ean8(barcode):
             EAN8(barcode: barcode).isValid
+        case let .upca(barcode):
+            UPCA(barcode: barcode).isValid
         }
     }
 
     public var vnBarcodeSymbology: VNBarcodeSymbology {
         switch self {
         case .ean8:
-            VNBarcodeSymbology.ean8
+            .ean8
         case .ean13:
-            VNBarcodeSymbology.ean13
+            .ean13
+        case .upca:
+            .upce
         }
     }
 
@@ -54,6 +61,8 @@ public enum Barcode: Sendable {
             "org.gs1.EAN-8"
         case .ean13:
             "org.gs1.EAN-13"
+        case .upca:
+            "org.gs1.UPC-A"
         }
     }
 
@@ -62,5 +71,5 @@ public enum Barcode: Sendable {
         BarcodeView(barcode: self)
     }
 
-    static let barcodeSymbologies: [VNBarcodeSymbology] = [.ean8, .ean13]
+    static let barcodeSymbologies: [VNBarcodeSymbology] = [.ean8, .ean13, .upce]
 }

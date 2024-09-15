@@ -36,6 +36,8 @@ public struct BarcodeView<InvalidView: View>: View {
                 EAN13View(ean13: .init(barcode: barcode))
             case let .ean8(barcode):
                 EAN8View(ean8: .init(barcode: barcode))
+            case let .upca(barcode):
+                UPCABarcodeView(upca: .init(barcode: barcode))
             }
         } else {
             invalidBarcodeView()
@@ -61,6 +63,9 @@ public extension View {
         BarcodeView(barcode: .ean8("20886509"))
             .frame(width: 200, height: 100)
             .barcodeLineColor(.blue)
+        UPCABarcodeView(upca: .init(barcode: "123456789012"))
+            .barcodeLineColor(.green)
+            .frame(width: 200, height: 100)
         BarcodeView(barcode: .ean8("12345678")) {
             Text("INVALID")
         }
