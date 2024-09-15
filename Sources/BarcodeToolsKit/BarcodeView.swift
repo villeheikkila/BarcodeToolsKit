@@ -31,13 +31,11 @@ public struct BarcodeView<InvalidView: View>: View {
 
     public var body: some View {
         if let barcode, barcode.isValid {
-            Group {
-                switch barcode {
-                case let .ean13(code):
-                    EAN13(barcode: code)
-                case let .ean8(code):
-                    EAN8(barcode: code)
-                }
+            switch barcode {
+            case let .ean13(barcode):
+                EAN13View(ean13: .init(barcode: barcode))
+            case let .ean8(barcode):
+                EAN8View(ean8: .init(barcode: barcode))
             }
         } else {
             invalidBarcodeView()
