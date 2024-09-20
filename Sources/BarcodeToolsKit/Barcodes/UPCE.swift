@@ -55,6 +55,7 @@ public struct UPCE: Sendable, CustomStringConvertible {
     var dataDigits: String { barcode.dropFirst().dropLast().description }
     var checkDigit: String { barcode.suffix(1).description }
 
+    @MainActor
     public var view: some View {
         UPCEView(upce: self)
     }
@@ -79,6 +80,7 @@ extension String {
 
 struct UPCEView: View {
     @Environment(\.barcodeLineColor) private var barcodeLineColor
+    @Environment(\.barcodeStyle) private var barcodeStyle
 
     private let standardBarHeightRatio = 0.8
     private let guardBarHeightRatio = 1.15
@@ -91,27 +93,32 @@ struct UPCEView: View {
     private let middleTextPosition = 24
     private let rightmostTextPosition = 47
 
+    private var barcodeShowNumbers: Bool {
+        barcodeStyle == .default
+    }
+
     let upce: UPCE
 
     var body: some View {
         Canvas { context, size in
             drawBarcode(context: context, canvasSize: size)
-            drawText(context: context, size: size)
+            if barcodeShowNumbers {
+                drawText(context: context, size: size)
+            }
         }
     }
 
     private func drawBarcode(context: GraphicsContext, canvasSize: CGSize) {
         let totalModuleCount = upce.barcodePattern.count + 2 * quietZoneWidth
         let moduleWidth = canvasSize.width / CGFloat(totalModuleCount)
-        let standardBarHeight = canvasSize.height * standardBarHeightRatio
-        let guardBarHeight = standardBarHeight * guardBarHeightRatio
+        let barHeight = barcodeShowNumbers ? canvasSize.height * standardBarHeightRatio : canvasSize.height
 
         var currentXPosition = moduleWidth * CGFloat(quietZoneWidth)
 
         for (index, barValue) in upce.barcodePattern.enumerated() {
             let isGuardBar = index < 3 || index >= upce.barcodePattern.count - 6
-            let barHeight = isGuardBar ? guardBarHeight : standardBarHeight
-            let barRect = CGRect(x: currentXPosition, y: 0, width: moduleWidth, height: barHeight)
+            let currentBarHeight = barcodeShowNumbers && isGuardBar ? barHeight * guardBarHeightRatio : barHeight
+            let barRect = CGRect(x: currentXPosition, y: 0, width: moduleWidth, height: currentBarHeight)
 
             if barValue == "1" {
                 context.fill(Path(barRect), with: .color(barcodeLineColor))
@@ -148,6 +155,12 @@ struct UPCEView: View {
 }
 
 #Preview {
-    UPCEView(upce: .init(barcode: "04252614")!)
-        .frame(width: 150, height: 100)
+    VStack(spacing: 20) {
+        UPCEView(upce: .init(barcode: "04252614")!)
+            .frame(width: 150, height: 100)
+            .barcodeStyle(.default)
+        UPCEView(upce: .init(barcode: "04252614")!)
+            .frame(width: 150, height: 100)
+            .barcodeStyle(.plain)
+    }
 }

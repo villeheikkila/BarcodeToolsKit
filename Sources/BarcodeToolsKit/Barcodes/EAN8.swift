@@ -62,6 +62,7 @@ public struct EAN8: Sendable, CustomStringConvertible {
         String(interpolatingEAN8: self)
     }
 
+    @MainActor
     public var view: some View {
         EAN8View(ean8: self)
     }
@@ -84,6 +85,7 @@ extension String {
 
 struct EAN8View: View {
     @Environment(\.barcodeLineColor) private var barcodeLineColor
+    @Environment(\.barcodeStyle) private var barcodeStyle
 
     private let fullHeightRatio = 0.9
     private let guardBarHeightRatio = 0.9
@@ -97,23 +99,34 @@ struct EAN8View: View {
     private let guardBarSecondStartIndex = 45
     private let guardBarSecondEndIndex = 74
 
+    private var showNumbers: Bool {
+        barcodeStyle == .default
+    }
+
     let ean8: EAN8
 
     var body: some View {
         Canvas { context, size in
             drawBarcode(context: context, size: size)
-            drawText(context: context, size: size)
+            if showNumbers {
+                drawText(context: context, size: size)
+            }
         }
     }
 
     private func drawBarcode(context: GraphicsContext, size: CGSize) {
         let moduleWidth = size.width / Double(totalModules)
-        let fullHeight = size.height * fullHeightRatio
+        let fullHeight = showNumbers ? size.height * fullHeightRatio : size.height
 
         for (index, char) in ean8.barcodePattern.enumerated() where char == "1" {
-            let barHeight = (index > guardBarStartIndex && index < guardBarEndIndex) ||
-                (index > guardBarSecondStartIndex && index < guardBarSecondEndIndex) ?
-                fullHeight * guardBarHeightRatio : fullHeight
+            let barHeight: CGFloat
+            if showNumbers {
+                barHeight = (index > guardBarStartIndex && index < guardBarEndIndex) ||
+                    (index > guardBarSecondStartIndex && index < guardBarSecondEndIndex) ?
+                    fullHeight * guardBarHeightRatio : fullHeight
+            } else {
+                barHeight = fullHeight
+            }
 
             context.drawBarcodeLine(at: index, moduleWidth: moduleWidth, height: barHeight, color: barcodeLineColor)
         }
@@ -133,4 +146,8 @@ struct EAN8View: View {
 #Preview {
     EAN8View(ean8: .init(barcode: "20886509")!)
         .frame(width: 200, height: 100)
+        .barcodeStyle(.default)
+    EAN8View(ean8: .init(barcode: "20886509")!)
+        .frame(width: 200, height: 80)
+        .barcodeStyle(.plain)
 }

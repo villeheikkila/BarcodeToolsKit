@@ -57,6 +57,7 @@ public struct UPCA: Sendable, CustomStringConvertible {
         String(interpolatingUPCA: self)
     }
 
+    @MainActor
     public var view: some View {
         UPCAView(upca: self)
     }
@@ -83,6 +84,7 @@ extension String {
 
 struct UPCAView: View {
     @Environment(\.barcodeLineColor) private var barcodeLineColor
+    @Environment(\.barcodeStyle) private var barcodeStyle
 
     private let fullHeightRatio = 0.8
     private let guardBarHeightRatio = 1.15
@@ -101,12 +103,18 @@ struct UPCAView: View {
     private let guardBarThirdStartIndex = 91
     private let guardBarThirdEndIndex = 93
 
+    private var showNumbers: Bool {
+        barcodeStyle == .default
+    }
+
     let upca: UPCA
 
     var body: some View {
         Canvas { context, size in
             drawBarcode(context: context, size: size)
-            drawText(context: context, size: size)
+            if showNumbers {
+                drawText(context: context, size: size)
+            }
         }
     }
 
@@ -120,7 +128,12 @@ struct UPCAView: View {
                 (index >= guardBarThirdStartIndex && index <= guardBarThirdEndIndex) ||
                 index == upca.barcodePattern.count - 1
 
-            let barHeight = isGuardBar ? fullHeight * guardBarHeightRatio : fullHeight
+            let barHeight: CGFloat
+            if showNumbers {
+                barHeight = isGuardBar ? fullHeight * guardBarHeightRatio : fullHeight
+            } else {
+                barHeight = size.height
+            }
 
             context.drawBarcodeLine(at: index + 6, moduleWidth: moduleWidth, height: barHeight, color: barcodeLineColor)
         }
@@ -144,5 +157,9 @@ struct UPCAView: View {
     VStack(spacing: 20) {
         UPCAView(upca: .init(barcode: "123456789012")!)
             .frame(width: 200, height: 100)
+            .barcodeStyle(.default)
+        UPCAView(upca: .init(barcode: "123456789012")!)
+            .frame(width: 200, height: 100)
+            .barcodeStyle(.plain)
     }
 }

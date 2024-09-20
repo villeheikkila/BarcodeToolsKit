@@ -71,6 +71,7 @@ public enum Barcode: Sendable, CustomStringConvertible {
         }
     }
 
+    @MainActor
     @ViewBuilder
     public var view: some View {
         switch self {

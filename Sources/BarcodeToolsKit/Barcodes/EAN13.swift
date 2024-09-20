@@ -75,6 +75,7 @@ public struct EAN13: Sendable, CustomStringConvertible {
         String(interpolatingEAN13: self)
     }
 
+    @MainActor
     public var view: some View {
         EAN13View(ean13: self)
     }
@@ -101,6 +102,7 @@ extension String {
 
 struct EAN13View: View {
     @Environment(\.barcodeLineColor) private var barcodeLineColor
+    @Environment(\.barcodeStyle) private var barcodeStyle
 
     private let fullHeightRatio = 0.9
     private let guardBarHeightRatio = 0.9
@@ -115,12 +117,18 @@ struct EAN13View: View {
     private let guardBarSecondStartIndex = 59
     private let guardBarSecondEndIndex = 101
 
+    private var showNumbers: Bool {
+        barcodeStyle == .default
+    }
+
     let ean13: EAN13
 
     var body: some View {
         Canvas { context, size in
             drawBarcode(context: context, size: size)
-            drawText(context: context, size: size)
+            if showNumbers {
+                drawText(context: context, size: size)
+            }
         }
     }
 
@@ -129,9 +137,14 @@ struct EAN13View: View {
         let fullHeight = size.height * fullHeightRatio
 
         for (index, char) in ean13.barcodePattern.enumerated() where char == "1" {
-            let barHeight = (index > guardBarStartIndex && index < guardBarEndIndex) ||
-                (index > guardBarSecondStartIndex && index < guardBarSecondEndIndex) ?
-                fullHeight * guardBarHeightRatio : fullHeight
+            let barHeight: CGFloat
+            if showNumbers {
+                barHeight = (index > guardBarStartIndex && index < guardBarEndIndex) ||
+                    (index > guardBarSecondStartIndex && index < guardBarSecondEndIndex) ?
+                    fullHeight * guardBarHeightRatio : fullHeight
+            } else {
+                barHeight = size.height
+            }
 
             context.drawBarcodeLine(at: index, moduleWidth: moduleWidth, height: barHeight, color: barcodeLineColor)
         }
@@ -153,5 +166,9 @@ struct EAN13View: View {
     VStack(spacing: 20) {
         EAN13View(ean13: .init(barcode: "6410405176059")!)
             .frame(width: 200, height: 100)
+            .barcodeStyle(.default)
+        EAN13View(ean13: .init(barcode: "6410405176059")!)
+            .frame(width: 200, height: 100)
+            .barcodeStyle(.plain)
     }
 }

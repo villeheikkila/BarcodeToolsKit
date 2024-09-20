@@ -48,6 +48,21 @@ public extension View {
     }
 }
 
+public enum BarcodeStyle {
+    case `default`
+    case plain
+}
+
+public extension EnvironmentValues {
+    @Entry var barcodeStyle: BarcodeStyle = .default
+}
+
+public extension View {
+    func barcodeStyle(_ style: BarcodeStyle) -> some View {
+        environment(\.barcodeStyle, style)
+    }
+}
+
 #Preview {
     VStack(spacing: 20) {
         VStack {
