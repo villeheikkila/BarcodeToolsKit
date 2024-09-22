@@ -162,9 +162,11 @@ struct EAN13View: View {
     VStack(spacing: 20) {
         EAN13View(ean13: .init(barcode: "6410405176059")!)
             .frame(width: 200, height: 100)
+            .barcodeLineColor(.black)
             .barcodeStyle(.default)
         EAN13View(ean13: .init(barcode: "6410405176059")!)
             .frame(width: 200, height: 100)
             .barcodeStyle(.plain)
+            .barcodeLineColor(.black)
     }
 }

@@ -10,13 +10,13 @@ public struct BarcodeScannerView: View {
     }
 
     public var body: some View {
-        #if !targetEnvironment(macCatalyst)
+        #if os(iOS) || os(visionOS)
             BarcodeDataScannerView(onDataFound: onDataFound)
         #endif
     }
 }
 
-#if !targetEnvironment(macCatalyst)
+#if os(iOS) || os(visionOS)
     struct BarcodeDataScannerView: View {
         let onDataFound: (_ barcode: Barcode?) -> Void
 
