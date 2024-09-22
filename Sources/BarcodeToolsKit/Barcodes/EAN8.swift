@@ -4,13 +4,14 @@ public struct EAN8: Sendable, CustomStringConvertible {
     public let barcode: String
 
     public init?(barcode: String) {
-        guard barcode.count == 8,
-              barcode.allSatisfy({ $0.isNumber }),
-              Self.isValid(barcode: barcode)
+        let trimmedBarcode = barcode.trimmedAndSpaceless
+        guard trimmedBarcode.count == 8,
+              trimmedBarcode.allSatisfy({ $0.isNumber }),
+              Self.isValid(barcode: trimmedBarcode)
         else {
             return nil
         }
-        self.barcode = barcode
+        self.barcode = trimmedBarcode
     }
 
     private static func isValid(barcode: String) -> Bool {
@@ -117,29 +118,24 @@ struct EAN8View: View {
     private func drawBarcode(context: GraphicsContext, size: CGSize) {
         let moduleWidth = size.width / Double(totalModules)
         let fullHeight = showNumbers ? size.height * fullHeightRatio : size.height
-
-        for (index, char) in ean8.barcodePattern.enumerated() where char == "1" {
-            let barHeight: CGFloat
-            if showNumbers {
-                barHeight = (index > guardBarStartIndex && index < guardBarEndIndex) ||
+        for (index, value) in ean8.barcodePattern.enumerated() where value == "1" {
+            let barHeight = if showNumbers {
+                (index > guardBarStartIndex && index < guardBarEndIndex) ||
                     (index > guardBarSecondStartIndex && index < guardBarSecondEndIndex) ?
                     fullHeight * guardBarHeightRatio : fullHeight
             } else {
-                barHeight = fullHeight
+                fullHeight
             }
-
-            context.drawBarcodeLine(at: index, moduleWidth: moduleWidth, height: barHeight, color: barcodeLineColor)
+            context.drawBarcodeLine(at: index, width: moduleWidth, height: barHeight, color: barcodeLineColor)
         }
     }
 
     private func drawText(context: GraphicsContext, size: CGSize) {
         let moduleWidth = size.width / Double(totalModules)
         let fontSize = size.height * fontSizeRatio
-        let font = Font.system(size: fontSize).weight(.medium)
         let yPosition = size.height * textYPositionRatio
-
-        context.drawText(ean8.leftHalf, x: moduleWidth * Double(leftTextPosition), y: yPosition, font: font, color: barcodeLineColor)
-        context.drawText(ean8.rightHalf, x: moduleWidth * Double(rightTextPosition), y: yPosition, font: font, color: barcodeLineColor)
+        context.drawText(ean8.leftHalf, x: moduleWidth * Double(leftTextPosition), y: yPosition, fontSize: fontSize, color: barcodeLineColor)
+        context.drawText(ean8.rightHalf, x: moduleWidth * Double(rightTextPosition), y: yPosition, fontSize: fontSize, color: barcodeLineColor)
     }
 }
 

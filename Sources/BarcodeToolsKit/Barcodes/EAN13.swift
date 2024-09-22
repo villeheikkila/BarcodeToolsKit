@@ -4,13 +4,14 @@ public struct EAN13: Sendable, CustomStringConvertible {
     public let barcode: String
 
     public init?(barcode: String) {
-        guard barcode.count == 13,
-              barcode.allSatisfy({ $0.isNumber }),
-              Self.isValid(barcode: barcode)
+        let trimmedBarcode = barcode.trimmedAndSpaceless
+        guard trimmedBarcode.count == 13,
+              trimmedBarcode.isAllNumbers,
+              Self.isValid(barcode: trimmedBarcode)
         else {
             return nil
         }
-        self.barcode = barcode
+        self.barcode = trimmedBarcode
     }
 
     private static func isValid(barcode: String) -> Bool {
@@ -135,30 +136,25 @@ struct EAN13View: View {
     private func drawBarcode(context: GraphicsContext, size: CGSize) {
         let moduleWidth = size.width / Double(totalModules)
         let fullHeight = size.height * fullHeightRatio
-
         for (index, char) in ean13.barcodePattern.enumerated() where char == "1" {
-            let barHeight: CGFloat
-            if showNumbers {
-                barHeight = (index > guardBarStartIndex && index < guardBarEndIndex) ||
+            let barHeight: Double = if showNumbers {
+                (index > guardBarStartIndex && index < guardBarEndIndex) ||
                     (index > guardBarSecondStartIndex && index < guardBarSecondEndIndex) ?
                     fullHeight * guardBarHeightRatio : fullHeight
             } else {
-                barHeight = size.height
+                size.height
             }
-
-            context.drawBarcodeLine(at: index, moduleWidth: moduleWidth, height: barHeight, color: barcodeLineColor)
+            context.drawBarcodeLine(at: index, width: moduleWidth, height: barHeight, color: barcodeLineColor)
         }
     }
 
     private func drawText(context: GraphicsContext, size: CGSize) {
         let moduleWidth = size.width / Double(totalModules)
-        let fontSize = size.height * fontSizeRatio
-        let font = Font.system(size: fontSize).weight(.medium)
         let yPosition = size.height * textYPositionRatio
-
-        context.drawText(String(ean13.firstTwoDigits.prefix(1)), x: moduleWidth * Double(firstDigitPosition), y: yPosition, font: font, color: barcodeLineColor)
-        context.drawText("\(ean13.firstTwoDigits.suffix(1))\(ean13.manufacturerCode)", x: moduleWidth * Double(leftTextPosition), y: yPosition, font: font, color: barcodeLineColor)
-        context.drawText("\(ean13.productCode)\(ean13.checkDigit)", x: moduleWidth * Double(rightTextPosition), y: yPosition, font: font, color: barcodeLineColor)
+        let fontSize = size.height * fontSizeRatio
+        context.drawText(String(ean13.firstTwoDigits.prefix(1)), x: moduleWidth * Double(firstDigitPosition), y: yPosition, fontSize: fontSize, color: barcodeLineColor)
+        context.drawText("\(ean13.firstTwoDigits.suffix(1))\(ean13.manufacturerCode)", x: moduleWidth * Double(leftTextPosition), y: yPosition, fontSize: fontSize, color: barcodeLineColor)
+        context.drawText("\(ean13.productCode)\(ean13.checkDigit)", x: moduleWidth * Double(rightTextPosition), y: yPosition, fontSize: fontSize, color: barcodeLineColor)
     }
 }
 

@@ -4,10 +4,14 @@ public struct UPCE: Sendable, CustomStringConvertible {
     public let barcode: String
 
     public init?(barcode: String) {
-        guard Self.isValid(barcode: barcode) else {
+        let trimmedBarcode = barcode.trimmedAndSpaceless
+        guard trimmedBarcode.count == 8,
+              trimmedBarcode.isAllNumbers,
+              Self.isValid(barcode: trimmedBarcode)
+        else {
             return nil
         }
-        self.barcode = barcode
+        self.barcode = trimmedBarcode
     }
 
     private static func isValid(barcode: String) -> Bool {
@@ -110,46 +114,34 @@ struct UPCEView: View {
 
     private func drawBarcode(context: GraphicsContext, canvasSize: CGSize) {
         let totalModuleCount = upce.barcodePattern.count + 2 * quietZoneWidth
-        let moduleWidth = canvasSize.width / CGFloat(totalModuleCount)
+        let moduleWidth = canvasSize.width / Double(totalModuleCount)
         let barHeight = barcodeShowNumbers ? canvasSize.height * standardBarHeightRatio : canvasSize.height
-
-        var currentXPosition = moduleWidth * CGFloat(quietZoneWidth)
-
-        for (index, barValue) in upce.barcodePattern.enumerated() {
+        for (index, value) in upce.barcodePattern.enumerated() where value == "1" {
             let isGuardBar = index < 3 || index >= upce.barcodePattern.count - 6
             let currentBarHeight = barcodeShowNumbers && isGuardBar ? barHeight * guardBarHeightRatio : barHeight
-            let barRect = CGRect(x: currentXPosition, y: 0, width: moduleWidth, height: currentBarHeight)
-
-            if barValue == "1" {
-                context.fill(Path(barRect), with: .color(barcodeLineColor))
-            }
-            currentXPosition += moduleWidth
+            context.drawBarcodeLine(at: quietZoneWidth + index + 1, width: moduleWidth, height: currentBarHeight, color: barcodeLineColor)
         }
     }
 
     private func drawText(context: GraphicsContext, size: CGSize) {
         let moduleWidth = size.width / Double(totalModules)
         let fontSize = size.height * fontSizeRatio
-        let font = Font.system(size: fontSize).weight(.medium)
         let innerYPosition = size.height * textYPositionRatio
         let outerYPosition = size.height * outerTextYPositionRatio
-
         context.drawText(String(upce.barcode.prefix(1)),
                          x: moduleWidth * Double(leftmostTextPosition),
                          y: outerYPosition,
-                         font: font,
+                         fontSize: fontSize,
                          color: barcodeLineColor)
-
         context.drawText(String(upce.barcode.dropFirst().dropLast()),
                          x: moduleWidth * Double(middleTextPosition),
                          y: innerYPosition,
-                         font: font,
+                         fontSize: fontSize,
                          color: barcodeLineColor)
-
         context.drawText(String(upce.barcode.suffix(1)),
                          x: moduleWidth * Double(rightmostTextPosition),
                          y: outerYPosition,
-                         font: font,
+                         fontSize: fontSize,
                          color: barcodeLineColor)
     }
 }

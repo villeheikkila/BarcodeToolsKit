@@ -1,6 +1,6 @@
 # BarcodeToolsKit
 
-Work in progress library for providing additional barcode tools for Swift and SwiftUI
+BarcodeToolsKit provides additional tools for working with barcodes with SwiftUI. It provides a way to validate barcodes and render those using SwiftUI canvas. It also provides a scanner that is limited to scanning the supported barcode types.
 
 ### Features
 
@@ -9,7 +9,7 @@ Work in progress library for providing additional barcode tools for Swift and Sw
 | EAN-8     | ✅         | ✅   | ✅      |
 | EAN-13    | ✅         | ✅   | ✅      |
 | UPC-A     | ✅         | ✅   | ✅      |
-| UPC-E     | ✅         | ⚠️   | ✅      |
+| UPC-E     | ✅         | ✅   | ✅      |
 
 ### Example
 

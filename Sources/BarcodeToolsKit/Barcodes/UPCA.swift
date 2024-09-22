@@ -4,13 +4,14 @@ public struct UPCA: Sendable, CustomStringConvertible {
     public let barcode: String
 
     public init?(barcode: String) {
-        guard barcode.count == 12,
-              barcode.allSatisfy({ $0.isNumber }),
-              Self.isValid(barcode: barcode)
+        let trimmedBarcode = barcode.trimmedAndSpaceless
+        guard trimmedBarcode.count == 12,
+              trimmedBarcode.isAllNumbers,
+              Self.isValid(barcode: trimmedBarcode)
         else {
             return nil
         }
-        self.barcode = barcode
+        self.barcode = trimmedBarcode
     }
 
     private static func isValid(barcode: String) -> Bool {
@@ -92,6 +93,7 @@ struct UPCAView: View {
     private let fontSizeRatio = 0.15
     private let totalModules = 107
     private let leftmostTextPosition = 1
+    private let leftTextAreaModuleCount = 6
     private let leftTextPosition = 28
     private let rightTextPosition = 78
     private let rightmostTextPosition = 105
@@ -121,35 +123,29 @@ struct UPCAView: View {
     private func drawBarcode(context: GraphicsContext, size: CGSize) {
         let moduleWidth = size.width / Double(totalModules)
         let fullHeight = size.height * fullHeightRatio
-
-        for (index, char) in upca.barcodePattern.enumerated() where char == "1" {
+        for (index, value) in upca.barcodePattern.enumerated() where value == "1" {
             let isGuardBar = (index >= guardBarStartIndex && index <= guardBarEndIndex) ||
                 (index >= guardBarSecondStartIndex && index <= guardBarSecondEndIndex) ||
                 (index >= guardBarThirdStartIndex && index <= guardBarThirdEndIndex) ||
                 index == upca.barcodePattern.count - 1
-
-            let barHeight: CGFloat
-            if showNumbers {
-                barHeight = isGuardBar ? fullHeight * guardBarHeightRatio : fullHeight
+            let barHeight: Double = if showNumbers {
+                isGuardBar ? fullHeight * guardBarHeightRatio : fullHeight
             } else {
-                barHeight = size.height
+                size.height
             }
-
-            context.drawBarcodeLine(at: index + 6, moduleWidth: moduleWidth, height: barHeight, color: barcodeLineColor)
+            context.drawBarcodeLine(at: index + leftTextAreaModuleCount, width: moduleWidth, height: barHeight, color: barcodeLineColor)
         }
     }
 
     private func drawText(context: GraphicsContext, size: CGSize) {
         let moduleWidth = size.width / Double(totalModules)
         let fontSize = size.height * fontSizeRatio
-        let font = Font.system(size: fontSize).weight(.medium)
         let innerYPosition = size.height * textYPositionRatio
         let outerYPosition = size.height * outerTextYPositionRatio
-
-        context.drawText(String(upca.barcode.prefix(1)), x: moduleWidth * Double(leftmostTextPosition), y: outerYPosition, font: font, color: barcodeLineColor)
-        context.drawText(String(upca.barcode.dropFirst().prefix(5)), x: moduleWidth * Double(leftTextPosition), y: innerYPosition, font: font, color: barcodeLineColor)
-        context.drawText(String(upca.barcode.dropFirst(6).prefix(5)), x: moduleWidth * Double(rightTextPosition), y: innerYPosition, font: font, color: barcodeLineColor)
-        context.drawText(String(upca.barcode.suffix(1)), x: moduleWidth * Double(rightmostTextPosition), y: outerYPosition, font: font, color: barcodeLineColor)
+        context.drawText(String(upca.barcode.prefix(1)), x: moduleWidth * Double(leftmostTextPosition), y: outerYPosition, fontSize: fontSize, color: barcodeLineColor)
+        context.drawText(String(upca.barcode.dropFirst().prefix(5)), x: moduleWidth * Double(leftTextPosition), y: innerYPosition, fontSize: fontSize, color: barcodeLineColor)
+        context.drawText(String(upca.barcode.dropFirst(6).prefix(5)), x: moduleWidth * Double(rightTextPosition), y: innerYPosition, fontSize: fontSize, color: barcodeLineColor)
+        context.drawText(String(upca.barcode.suffix(1)), x: moduleWidth * Double(rightmostTextPosition), y: outerYPosition, fontSize: fontSize, color: barcodeLineColor)
     }
 }
 

@@ -1,12 +1,12 @@
 import SwiftUI
 
 extension GraphicsContext {
-    func drawText(_ text: String, x: CGFloat, y: CGFloat, font: Font, color: Color) {
-        draw(Text(text).font(font).foregroundStyle(color), at: CGPoint(x: x, y: y))
+    func drawText(_ text: String, x: Double, y: Double, fontSize: Double, color: Color) {
+        draw(Text(text).font(Font.system(size: fontSize).weight(.medium)).foregroundStyle(color), at: CGPoint(x: x, y: y))
     }
 
-    func drawBarcodeLine(at index: Int, moduleWidth: CGFloat, height: CGFloat, color: Color) {
-        let barRect = CGRect(x: CGFloat(index) * moduleWidth, y: 0, width: moduleWidth, height: height)
+    func drawBarcodeLine(at index: Int, width: Double, height: Double, color: Color) {
+        let barRect = CGRect(x: Double(index) * width, y: 0, width: width, height: height)
         fill(Path(barRect), with: .color(color))
     }
 }
