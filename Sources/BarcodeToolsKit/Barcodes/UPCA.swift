@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct UPCA: Sendable, CustomStringConvertible {
+public struct UPCA: Sendable, Hashable, CustomStringConvertible {
     public let barcode: String
 
     public init?(barcode: String) {

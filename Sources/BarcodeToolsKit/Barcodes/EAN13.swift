@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct EAN13: Sendable, CustomStringConvertible {
+public struct EAN13: Sendable, Hashable, CustomStringConvertible {
     public let barcode: String
 
     public init?(barcode: String) {

@@ -1,7 +1,7 @@
 import SwiftUI
 import Vision
 
-public enum Barcode: Sendable, CustomStringConvertible {
+public enum Barcode: Sendable, CustomStringConvertible, Hashable {
     case ean13(EAN13)
     case ean8(EAN8)
     case upca(UPCA)
