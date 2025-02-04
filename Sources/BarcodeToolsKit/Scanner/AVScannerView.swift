@@ -1,7 +1,7 @@
 import AVFoundation
 import SwiftUI
 
-#if os(iOS) || os(visionOS) || os(macOS)
+#if os(iOS) || os(visionOS)
     public struct AVScannerView: UIViewControllerRepresentable {
         enum ScanError: Error {
             case badInput
@@ -85,7 +85,17 @@ import SwiftUI
                 view.layer.addSublayer(previewLayer)
 
                 reset()
-                self.captureSession?.startRunning()
+                Task.detached { [weak self] in
+                    await self?.startCaptureSession()
+                }
+            }
+
+            func startCaptureSession() {
+                captureSession?.startRunning()
+            }
+
+            private func stopCaptureSession() {
+                captureSession?.stopRunning()
             }
 
             private func handleCameraPermission() {
@@ -157,7 +167,9 @@ import SwiftUI
             override public func viewDidDisappear(_ animated: Bool) {
                 super.viewDidDisappear(animated)
                 if captureSession?.isRunning == true {
-                    captureSession?.startRunning()
+                    Task.detached { [weak self] in
+                        await self?.stopCaptureSession()
+                    }
                 }
             }
 
@@ -248,8 +260,7 @@ import SwiftUI
                 parentView.onDataFound(result)
             }
 
-            func didFail(reason _: ScanError) {
-            }
+            func didFail(reason _: ScanError) {}
         }
     }
 #endif
