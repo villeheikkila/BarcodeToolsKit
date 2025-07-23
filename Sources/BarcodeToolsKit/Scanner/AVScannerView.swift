@@ -123,7 +123,9 @@ import SwiftUI
                 Task {
                     let status = await AVCaptureDevice.requestAccess(for: .video)
                     guard status else {
-                        self.didFail(reason: .permissionDenied)
+                        await MainActor.run {
+                            self.didFail(reason: .permissionDenied)
+                        }
                         return
                     }
                     completion?()
