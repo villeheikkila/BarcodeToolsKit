@@ -120,9 +120,10 @@ import SwiftUI
             }
 
             private func requestCameraAccess(completion: (() -> Void)?) {
-                AVCaptureDevice.requestAccess(for: .video) { [weak self] status in
+                Task {
+                    let status = await AVCaptureDevice.requestAccess(for: .video)
                     guard status else {
-                        self?.didFail(reason: .permissionDenied)
+                        self.didFail(reason: .permissionDenied)
                         return
                     }
                     completion?()
@@ -234,7 +235,7 @@ import SwiftUI
                 guard let metadataObject = metadataObjects.first else { return }
                 guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else { return }
                 guard let stringValue = readableObject.stringValue else { return }
-                let type = readableObject.type.rawValue
+                _ = readableObject.type.rawValue
                 Task {
                     guard await didFinishScanning == false else { return }
                     guard let result = Barcode(rawValue: stringValue) else { return }
